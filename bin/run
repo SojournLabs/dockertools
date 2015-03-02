@@ -1,0 +1,28 @@
+#!/bin/bash
+# Run the Docker container with the command specified.
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 container_dir container_name cmd1 cmd2 ... cmdN"
+    echo "Environment variables supported:"
+    echo "VAPR_DATA_DIR_x=y mount directory y as /vapr/y from host directory x."
+	exit 1
+fi
+
+CONTAINER_DIR=$1
+CONTAINER=$2
+shift
+shift
+
+# Set up the mount points for Docker.
+MOUNTS=$(set | egrep "^VAPR_DATA_DIR" | sed 's/^VAPR_DATA_DIR_\(.*\)=.*/\1/')
+DATA_DIRS=
+for DIR_NAME in ${MOUNTS}; do
+    eval MOUNT_POINT=\$VAPR_DATA_DIR_${DIR_NAME}
+    echo ${MOUNT_POINT}
+    DATA_DIRS+="-v ${MOUNT_POINT}:/vapr/${DIR_NAME} "
+done
+
+if [ "${DOCKER_BUILD}" == "TRUE" ]; then
+    docker build -t sojournlabs/${CONTAINER} ${CONTAINER_DIR}
+fi
+
+docker run --rm=true -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
