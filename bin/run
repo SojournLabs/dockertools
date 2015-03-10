@@ -33,4 +33,4 @@ if [ "${DOCKER_DAEMONIZE}" == "TRUE" ]; then
     NAME_FLAG="--name ${CONTAINER}"
 fi
 
-docker run ${DAEMONIZE_FLAG} ${NAME_FLAG} --rm=${REMOVE_FLAG} -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
+docker run ${DOCKER_FLAGS} ${DAEMONIZE_FLAG} ${NAME_FLAG} --rm=${REMOVE_FLAG} -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
