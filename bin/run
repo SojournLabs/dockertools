@@ -25,4 +25,12 @@ if [ "${DOCKER_BUILD}" == "TRUE" ]; then
     docker build -t sojournlabs/${CONTAINER} ${CONTAINER_DIR}
 fi
 
-docker run --rm=true -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
+REMOVE_FLAG=true
+
+if [ "${DOCKER_DAEMONIZE}" == "TRUE" ]; then
+    DAEMONIZE_FLAG=-d
+    REMOVE_FLAG=false
+    NAME_FLAG="--name ${CONTAINER}"
+fi
+
+docker run ${DAEMONIZE_FLAG} ${NAME_FLAG} --rm=${REMOVE_FLAG} -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
