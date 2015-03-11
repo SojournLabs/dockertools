@@ -12,14 +12,29 @@ CONTAINER=$2
 shift
 shift
 
+# Read-only certificate store?
+VAPR_CERTSTORE_RO=${VAPR_CERTSTORE_RO:=FALSE}
+if [ "${VAPR_CERTSTORE_RO}" == "TRUE" ]; then
+    export VAPR_DATA_DIRRO_certstore=${VAPR_CERTSTORE}
+else
+    export VAPR_DATA_DIR_certstore=${VAPR_CERTSTORE}
+fi
+
 # Set up the mount points for Docker.
-MOUNTS=$(set | egrep "^VAPR_DATA_DIR" | sed 's/^VAPR_DATA_DIR_\(.*\)=.*/\1/')
+MOUNTS=$(set | egrep "^VAPR_DATA_DIR_" | sed 's/^VAPR_DATA_DIR_\(.*\)=.*/\1/')
 DATA_DIRS=
 for DIR_NAME in ${MOUNTS}; do
     eval MOUNT_POINT=\$VAPR_DATA_DIR_${DIR_NAME}
-    echo ${MOUNT_POINT}
     DATA_DIRS+="-v ${MOUNT_POINT}:/vapr/${DIR_NAME} "
 done
+
+# Set up the read-only mount points for Docker.
+MOUNTS=$(set | egrep "^VAPR_DATA_DIRRO_" | sed 's/^VAPR_DATA_DIRRO_\(.*\)=.*/\1/')
+for DIR_NAME in ${MOUNTS}; do
+    eval MOUNT_POINT=\$VAPR_DATA_DIRRO_${DIR_NAME}
+    DATA_DIRS+="-v ${MOUNT_POINT}:/vapr/${DIR_NAME}:ro "
+done
+
 
 if [ "${DOCKER_BUILD}" == "TRUE" ]; then
     docker build -t sojournlabs/${CONTAINER} ${CONTAINER_DIR}
@@ -31,6 +46,14 @@ if [ "${DOCKER_DAEMONIZE}" == "TRUE" ]; then
     DAEMONIZE_FLAG=-d
     REMOVE_FLAG=false
     NAME_FLAG="--name ${CONTAINER}"
+fi
+
+if [ "${VAPR_CERTSTORE}" == "" ]; then
+    tput bold; tput setaf 1
+    printf "ERROR: "
+    tput sgr0
+    echo No certificate store location set.
+    exit 1
 fi
 
 docker run ${DOCKER_FLAGS} ${DAEMONIZE_FLAG} ${NAME_FLAG} --rm=${REMOVE_FLAG} -t -i ${DATA_DIRS} sojournlabs/${CONTAINER} "$@"
