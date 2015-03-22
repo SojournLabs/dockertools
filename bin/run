@@ -12,6 +12,14 @@ CONTAINER=$2
 shift
 shift
 
+
+# Try to set default certstore if it exists.
+if [ "${VAPR_CERTSTORE}" == "" ]; then
+    if [ -d /home/core/certstore ]; then
+        export VAPR_CERTSTORE=/home/core/certstore
+    fi
+fi
+
 # Read-only certificate store?
 VAPR_CERTSTORE_RO=${VAPR_CERTSTORE_RO:=FALSE}
 if [ "${VAPR_CERTSTORE_RO}" == "TRUE" ]; then
