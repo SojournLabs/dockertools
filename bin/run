@@ -55,6 +55,9 @@ if [ "${VAPR_USE_DATA_CONTAINER}" == "TRUE" ]; then
 fi
 
 if [ "${DOCKER_DAEMONIZE}" == "TRUE" ]; then
+    if docker start ${CONTAINER} 2> /dev/null; then
+        exit 0
+    fi
     DAEMONIZE_FLAG=-d
     REMOVE_FLAG=false
     NAME_FLAG="--name ${CONTAINER}"
