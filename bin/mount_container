@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+CONTAINER_NAME=$1
+shift
+
+if [ "${CONTAINER_NAME}" == "" ]; then
+    echo "Usage: "
+    echo " $0 container_name"
+    exit 1
+fi
+
+VOLS=
+while [ "$1" ]
+do
+    VOLS+="-v $1 "
+    shift
+done
+
+docker run -t -i --volumes-from data_${CONTAINER_NAME} busybox

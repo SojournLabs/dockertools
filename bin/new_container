@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+CONTAINER_NAME=$1
+shift
+
+if [ "${CONTAINER_NAME}" == "" ]; then
+    echo "Usage: "
+    echo " $0 container_name path1 path2 ..."
+    exit 1
+fi
+
+VOLS=
+while [ "$1" ]
+do
+    VOLS+="-v $1 "
+    shift
+done
+
+docker create --name data_${CONTAINER_NAME} ${VOLS} busybox

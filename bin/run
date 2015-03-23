@@ -50,6 +50,10 @@ fi
 
 REMOVE_FLAG=true
 
+if [ "${VAPR_USE_DATA_CONTAINER}" == "TRUE" ]; then
+    DOCKER_FLAGS+=" --volumes-from data_${CONTAINER}"
+fi
+
 if [ "${DOCKER_DAEMONIZE}" == "TRUE" ]; then
     DAEMONIZE_FLAG=-d
     REMOVE_FLAG=false
