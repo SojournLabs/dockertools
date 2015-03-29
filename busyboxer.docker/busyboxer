@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Author: jonathan lung <auto+vapr@heresjono.com>
+# Usage: $0 command from_package
+busybox_package() {
+    # Package the binary file named as the first argument into the /vapr/build directory.
+    rm -Rf /tmp/busy
+    mkdir -p /tmp/busy/{lib64,bin}
+    ldd $1 | awk '{if ( $0 !~ /=>/ ) { print $1; next }; if ( $0 !~ /=> \// ) { next } print $3 } ' | xargs -I '{}' cp -v '{}' /tmp/busy/lib64
+    cp $1 /tmp/busy/bin
+    (tar -czf $1.tar.gz -C /tmp/busy .)
+    mv $1.tar.gz /vapr/build
+}
+
+PACKAGE=$2
+
+if [[ "${PACKAGE}" != "" ]]; then
+    apt-get update
+    apt-get install -y ${PACKAGE}
+fi
+
+COMMAND=$(which $1)
+
+busybox_package ${COMMAND}
