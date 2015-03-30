@@ -39,7 +39,13 @@ http_content() {
     # Usage:
     #     http_content server:port VERB URL [content]
     # Returns the content from an HTTP request.
-    http $* | awk 'BEGIN {CONTENT=0} {if (CONTENT == 1) { print $0 }; if ( $0 ~ /^\s+$/) { CONTENT=1 } }'
+    http_RETRY=${RETRY:=3}
+    http_CONTENT=""
+    until [[ ${http_RETRY} -eq 0 || "${http_CONTENT}" != "" ]]; do
+        http_CONTENT=$(http $* | awk 'BEGIN {CONTENT=0} {if (CONTENT == 1) { print $0 }; if ( $0 ~ /^\s+$/) { CONTENT=1 } }')
+        let http_RETRY-=1
+    done
+    echo "${http_CONTENT}"
 }
 
 https() {
@@ -61,5 +67,11 @@ https_content() {
     #     https_content server[:port] VERB URL [content]
     # Returns the content from an HTTPS request.
     # N.B.: Certificate checking does NOT take place. This is INSECURE.
-    https $* | awk 'BEGIN {CONTENT=0} {if (CONTENT == 1) { print $0 }; if ( $0 ~ /^\s+$/) { CONTENT=1 } }'
+    https_RETRY=${RETRY:=3}
+    https_CONTENT=""
+    until [[ ${https_RETRY} -eq 0 || "${https_CONTENT}" != "" ]]; do
+        https_CONTENT=$(https $* | awk 'BEGIN {CONTENT=0} {if (CONTENT == 1) { print $0 }; if ( $0 ~ /^\s+$/) { CONTENT=1 } }')
+        let https_RETRY-=1
+    done
+    echo "${https_CONTENT}"
 }

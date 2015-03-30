@@ -20,9 +20,9 @@ etcdctl_ls() {
     | awk '
            BEGIN {
             RS=","
+            FS="\"";
            }
            {
-            FS="\"";
             if ( $2 == "key" ) {
                 print $4
             }
