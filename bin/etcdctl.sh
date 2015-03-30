@@ -1,14 +1,12 @@
 #!/bin/sh
+# Author: jonathan lung <auto+vapr@heresjono.com>
 # An implementation of some basic etcdctl functionality. Depends on sh, wget, socat, and awk.
+# Also requires http.sh from https://raw.githubusercontent.com/SojournLabs/dockertools/
+# to be located at /bin/http.sh.
 # Meant to be used in a busybox Docker image with socat.
 
-http() {
-    if [[ "$4" == "" ]]; then
-        echo -e "$2 $3 HTTP/1.1\n" | socat TCP:$1 -
-    else
-        echo -e "$2 $3 HTTP/1.1\nContent-Length: ${#4}\nContent-Type: application/x-www-form-urlencoded\n\n$4" | socat TCP:$1 -
-    fi
-}
+. /bin/http.sh
+
 etcdctl_get() {
     # Usage: etcdctl_get key
     # We don't allow quotation marks in our value.
