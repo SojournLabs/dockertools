@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Author: jonathan lung <auto+vapr@heresjono.com>
+# Usage: $0 command arguments
+
+cd /
+gunzip -c /vapr/build/$1.tar.gz | tar xvf -
+CMD=$1
+shift
+"${CMD}" $*
