@@ -4,4 +4,4 @@
 # manually or used using busyboxed.
 #
 # Usage: busyboxer command_name [package_name]
-docker run -t -i --rm -v `pwd`:/vapr/build sojournlabs/busyboxer $*
+docker run -t -i --rm -v `pwd`:/vapr/build sojournlabs/busyboxer "$@"
