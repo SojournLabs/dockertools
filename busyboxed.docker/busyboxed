@@ -3,7 +3,7 @@
 # Usage: $0 command arguments
 
 cd /
-gunzip -c /vapr/build/$1.tar.gz | tar xvf -
+gunzip -c /vapr/build/$1.tar.gz | tar xf - > /dev/null
 CMD=$1
 shift
 "${CMD}" $*
