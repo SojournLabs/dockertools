@@ -12,6 +12,16 @@ etcdctl_get() {
     # We don't allow quotation marks in our value.
     wget -q -O - "http://${ETCD}/v2/keys/$1?recursive=false&sorted=false" | sed 's|.*"value":"\([^"]*\)".*|\1|'
 }
+
+etcdctl_watch() {
+    # Usage: etcdctl_watch dir [recursive]
+    if [[ "$2" == "recursive" ]]; then
+        wget -q -O - "http://${ETCD}/v2/keys/$1?consistent=true&wait=true&recursive=true"
+    else
+        wget -q -O - "http://${ETCD}/v2/keys/$1?consistent=true&wait=true&recursive=false"
+    fi
+}
+
 etcdctl_ls() {
     # Usage: etcdctl_ls directory
     # We don't allow quotation marks in our directory names.
